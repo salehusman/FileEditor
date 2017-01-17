@@ -25,17 +25,13 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
 
-        final FileEditor2 editor = new FileEditor2("shit", FileEditor2.INTERNAL_STORAGE, this);
+        final FileEditor2 editor = new FileEditor2("folder", FileEditor2.INTERNAL_STORAGE, this);
         final List<String> list = new ArrayList<String>();
         list.add("a");
         list.add("b");
         list.add("c");
         list.add("d");
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        
 
         editor.askForPremmisions();
 
@@ -44,10 +40,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-
-                editor.writeList("test.txt", list, true);
+                        editor.writeList("test.txt", list, true);
 
                 for (File file : editor.getFileList("")) {
 
@@ -61,35 +54,13 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-                editor.createEmptyFile("shit.txt");
-                editor.createEmptyFile("shityCunt.txt");
-                editor.createEmptyFile("uberShit.txt");
+                editor.createEmptyFile("file1.txt");
+                editor.createEmptyFile("file2.txt");
+                editor.createEmptyFile("file3.txt");
 
-                editor.rename("uberShit.txt", "justShit.txt");
-                editor.delete("shityCunt.txt");
+                editor.rename("file1.txt", "file1-copy.txt");
+                editor.delete("file3.txt");
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }
