@@ -12,4 +12,4 @@ Simple File Editor "library" (i guess) that was written over a year ago, expect 
    
    
    
-   <iframe width="560" height="315" src="https://www.youtube.com/embed/ZXsQAXx_ao0" frameborder="0" allowfullscreen></iframe>
+https://www.youtube.com/watch?v=ZXsQAXx_ao0
