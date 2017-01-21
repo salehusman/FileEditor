@@ -1,4 +1,4 @@
-package com.example.zozombie.fileeditor;
+package site.withoutcaps.fileeditor;
 
 import android.Manifest;
 import android.app.Activity;
@@ -21,48 +21,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FileEditor2 {
+public class FileEditor {
 
     public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
+
     public static final int APP_PRIVATE_STORAGE = 1;
     public static final int INTERNAL_STORAGE = 2;
+    public static final int CUSTOM_PATH_STORAGE = 3;
 
     private Activity context;
     private File PATH;
-    private BufferedWriter writer;
-    private Boolean enviormentSubdir;
     private static final String TAG = "FileEditor";
 
-//    public static final int EXTERNAL_STORAGE = 3;
 
-    public FileEditor2(String folderName, int storage, Context context) {
+    public FileEditor(String folderName, int storage, Context context) {
         this.context = (Activity) context;
         setPath(folderName, storage);
     }
 
-    private void prepareWriter(String fileName, Boolean overwrite) {        //i have no idea why this method exist. BLAME STONE ME, NOT ME :D
-        try {
-            writer = new BufferedWriter(new FileWriter(!enviormentSubdir ? PATH + "/" + fileName : PATH.toString(), !overwrite));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setPath(String folderName, int storage) {
-        enviormentSubdir = false;
+    /**
+     * Method that sets "default path" if you will.
+     * @param path name of the file OR path to the subdir(ex: Pictures/AwsomePic.jpg).
+     * @param storage   APP_PRIVATE_STORAGE or INTERNAL_STORAGE or CUSTOM_PATH_STORAGE.
+     */
+    public void setPath(String path, int storage) {
         switch (storage) {
             case APP_PRIVATE_STORAGE:
-                this.PATH = new File(context.getFilesDir() + "/" + folderName);
+                this.PATH = new File(context.getFilesDir() + File.separator + path);
 
                 break;
             case INTERNAL_STORAGE:
-                this.PATH = Environment.getExternalStoragePublicDirectory(folderName);
+                this.PATH = Environment.getExternalStoragePublicDirectory(path);
 
                 break;
-//            case EXTERNAL_STORAGE:
-//                break;
+            case CUSTOM_PATH_STORAGE:
+                this.PATH = new File(path);
+                break;
         }
-        Log.d(TAG, "setPath: " + PATH);
+        Log.d(TAG, "PATH: " + PATH);
         this.PATH.mkdirs();
     }
 
@@ -82,42 +78,19 @@ public class FileEditor2 {
                     MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
         }
     }
-//--------------------------------------[2017-01-17: few extra comments :)]-----------------------------//
+
     /**
      * Writes List of strings to a file. (Each string in separate line)
      *
-     * @param fileName  location of file.
+     * @param path  location of file.
      * @param data      List that needs to be saved from this cruel world of RAM. :D
      * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
      */
-    public void writeList(String fileName, List<String> data, Boolean overwrite) {
+    public void writeList(String path, List<?> data, Boolean overwrite) {
         try {
-            //creates BufferedWriteer that alows us to "export" data to the files. No need to worry about closing "FileWriter", BufferedWriter has that part preimplemented within
-            writer = new BufferedWriter(new FileWriter(!enviormentSubdir ? PATH + "/" + fileName : PATH.toString(), !overwrite));
-
-//            prepareWriter(fileName, overwrite);
-
-            for (String line : data) {              //just writes down a list to the file(one line== one list item), changing parameter "List<String> data" to " List<?> data" should make it accept any type of list, im abit too lazy and busy to test stuff right now :(
+            BufferedWriter writer = new BufferedWriter(new FileWriter(PATH + File.separator + path, !overwrite));
+            for (Object line : data)
                 writer.write(line + System.getProperty("line.separator"));
-            }
-            writer.flush();         //if i remember correctly, it waits till all data
-            writer.close();         //ULL NEVER GUESS WHAT THIS LINE DOES!!!!!!
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * @param fileName  location of file.
-     * @param data      String that needs to be saved from this cruel world of RAM. :D
-     * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
-     */
-    public void writeString(String fileName, String data, Boolean overwrite) {
-        try {
-            prepareWriter(fileName, overwrite);
-            writer.write(data);
             writer.flush();
             writer.close();
         } catch (FileNotFoundException e) {
@@ -126,45 +99,64 @@ public class FileEditor2 {
             e.printStackTrace();
         }
     }
-//--------------------------------------[2017-01-17: few extra comments :)]-----------------------------//
 
     /**
-     * Reads file and returns List with its contents.
-     *
-     * @param fileName location of file.
-     * @return List with file contents.(one line = one list item)
-     * @see File
+     * @param path  location of file.
+     * @param data      String that needs to be saved from this cruel world of RAM. :D
+     * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
      */
-    public List<String> readList(String fileName) {
-        List<String> fileContent = new ArrayList<>();       //Creates empty list, ik, what a surprise :D
+    public void writeString(String path, Boolean overwrite, String... data) {
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(PATH + "/" + fileName)));  //Pretty much the same shit as in line 96, just for reading
-            String strLine = null;
-            while ((strLine = br.readLine()) != null)               //checks if !strLine.equals(null) :) and adds that line to
-                fileContent.add(strLine);                           //adds line to the list, ik unexpected :D
-            br.close();                                             //well, and ofcourse, affter "reading" storries you get to the end and have to "close" the book :D
+            BufferedWriter writer = new BufferedWriter(new FileWriter(PATH + File.separator + path, !overwrite));
+            for (String s : data)
+                writer.write(s);
+            writer.flush();
+            writer.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return fileContent;                         //ummm, could u explane me this line, i dot really get it :D
+    }
+
+    /**
+     * Reads file and returns List with its contents.
+     *
+     * @param path location of file.
+     * @return List with file contents.(one line = one list item)
+     * @see File
+     */
+    public List<String> readList(String path) {
+        List<String> fileContent = new ArrayList<>();
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(PATH + File.separator + path)));
+            String strLine = null;
+            while ((strLine = br.readLine()) != null)
+                fileContent.add(strLine);
+            br.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileContent;
     }
 
     /**
      * Reads file and returns String with its contents.
      *
-     * @param fileName location of file.
+     * @param path location of file.
      * @return String with file contents.
      * @see File
      */
-    public String readString(String fileName) {
+    public String readString(String path) {
         StringBuilder builder = new StringBuilder();
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(PATH + "/" + fileName)));
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(PATH + File.separator + path)));
             String strLine = null;
             while ((strLine = br.readLine()) != null)
-                builder.append(strLine + System.getProperty("line.separator"));
+//                builder.append(strLine + System.getProperty("line.separator"));
+                builder.append(strLine );
             br.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -186,13 +178,13 @@ public class FileEditor2 {
     /**
      * Creates empty file
      *
-     * @param fileName name of a file.
+     * @param path name of a file.
      * @return true if the file has been created, false if it already exists.
      * @see File
      */
-    public boolean createEmptyFile(String fileName) {
+    public boolean createEmptyFile(String path) {
         try {
-            return new File(PATH, fileName).createNewFile();
+            return new File(PATH, path).createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
