@@ -18,48 +18,47 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-
 public class FileEditor {
-
+    private static final String TAG = "FileEditor";
     public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 0;
-
     public static final int APP_PRIVATE_STORAGE = 1;
     public static final int INTERNAL_STORAGE = 2;
     public static final int CUSTOM_PATH_STORAGE = 3;
 
-    private Activity context;
-    private File PATH;
-    private static final String TAG = "FileEditor";
+    private Context mContext;
+    private File mPath;
 
 
     public FileEditor(String folderName, int storage, Context context) {
-        this.context = (Activity) context;
+        this.mContext = context;
         setPath(folderName, storage);
     }
 
     /**
      * Method that sets "default path" if you will.
-     * @param path name of the file OR path to the subdir(ex: Pictures/AwsomePic.jpg).
-     * @param storage   APP_PRIVATE_STORAGE or INTERNAL_STORAGE or CUSTOM_PATH_STORAGE.
+     *
+     * @param path    name of the file OR path to the subdir(ex: Pictures/AwsomePic.jpg).
+     * @param storage APP_PRIVATE_STORAGE or INTERNAL_STORAGE or CUSTOM_PATH_STORAGE.
      */
     public void setPath(String path, int storage) {
         switch (storage) {
             case APP_PRIVATE_STORAGE:
-                this.PATH = new File(context.getFilesDir() + File.separator + path);
+                this.mPath = new File(mContext.getFilesDir() + File.separator + path);
 
                 break;
             case INTERNAL_STORAGE:
-                this.PATH = Environment.getExternalStoragePublicDirectory(path);
+                this.mPath = Environment.getExternalStoragePublicDirectory(path);
 
                 break;
             case CUSTOM_PATH_STORAGE:
-                this.PATH = new File(path);
+                this.mPath = new File(path);
                 break;
         }
-        Log.d(TAG, "PATH: " + PATH);
-        this.PATH.mkdirs();
+        Log.d(TAG, "mPath: " + mPath);
+        this.mPath.mkdirs();
     }
 
     /**
@@ -72,8 +71,8 @@ public class FileEditor {
      * For more information see: <a href="https://developer.android.com/training/permissions/requesting.html">Requesting Permissions at Run Time</a>
      */
     public void askForPremmisions() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(context,
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions((Activity) mContext,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
         }
@@ -82,13 +81,13 @@ public class FileEditor {
     /**
      * Writes List of strings to a file. (Each string in separate line)
      *
-     * @param path  location of file.
+     * @param path      location of file.
      * @param data      List that needs to be saved from this cruel world of RAM. :D
      * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
      */
     public void writeList(String path, List<?> data, Boolean overwrite) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(PATH + File.separator + path, !overwrite));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(mPath + File.separator + path, !overwrite));
             for (Object line : data)
                 writer.write(line + System.getProperty("line.separator"));
             writer.flush();
@@ -101,15 +100,15 @@ public class FileEditor {
     }
 
     /**
-     * @param path  location of file.
+     * @param path      location of file.
      * @param data      String that needs to be saved from this cruel world of RAM. :D
      * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
      */
     public void writeString(String path, Boolean overwrite, String... data) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(PATH + File.separator + path, !overwrite));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(mPath + File.separator + path, !overwrite));
             for (String s : data)
-                writer.write(s);
+                writer.write(s + System.getProperty("line.separator"));
             writer.flush();
             writer.close();
         } catch (FileNotFoundException e) {
@@ -129,7 +128,7 @@ public class FileEditor {
     public List<String> readList(String path) {
         List<String> fileContent = new ArrayList<>();
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(PATH + File.separator + path)));
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(mPath + File.separator + path)));
             String strLine = null;
             while ((strLine = br.readLine()) != null)
                 fileContent.add(strLine);
@@ -152,11 +151,10 @@ public class FileEditor {
     public String readString(String path) {
         StringBuilder builder = new StringBuilder();
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(PATH + File.separator + path)));
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(mPath + File.separator + path)));
             String strLine = null;
             while ((strLine = br.readLine()) != null)
-//                builder.append(strLine + System.getProperty("line.separator"));
-                builder.append(strLine );
+                builder.append(strLine + System.getProperty("line.separator"));
             br.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -172,7 +170,7 @@ public class FileEditor {
      * @see File
      */
     public boolean exists(String name) {
-        return new File(PATH, name).exists();
+        return new File(mPath, name).exists();
     }
 
     /**
@@ -183,12 +181,25 @@ public class FileEditor {
      * @see File
      */
     public boolean createEmptyFile(String path) {
-        try {
-            return new File(PATH, path).createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        if (!exists(path))
+            try {
+                return new File(mPath, path).createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         return false;
+    }
+
+    public void createIfDosentExist(String fileName, boolean overwrite, List<String> data) {
+        if (!exists(fileName))
+            if (data != null)
+                writeList(fileName, data, overwrite);
+            else
+                createEmptyFile(fileName);
+    }
+
+    public void createIfDosentExist(String fileName, boolean overwrite, String... data) {
+        createIfDosentExist(fileName, overwrite, Arrays.asList(data));
     }
 
     /**
@@ -200,7 +211,7 @@ public class FileEditor {
      * @see File
      */
     public boolean rename(String from, String to) {
-        return new File(PATH, from).renameTo(new File(PATH, to));
+        return new File(mPath, from).renameTo(new File(mPath, to));
     }
 
     /**
@@ -211,7 +222,7 @@ public class FileEditor {
      * @see File
      */
     public File[] getFileList(String path) {
-        return new File(PATH, path).listFiles();
+        return new File(mPath, path).listFiles();
     }
 
     /**
@@ -222,7 +233,7 @@ public class FileEditor {
      * @see File
      */
     public File getFile(String path) {
-        return new File(PATH, path);
+        return new File(mPath, path);
     }
 
     /**
@@ -233,6 +244,7 @@ public class FileEditor {
      * @see File
      */
     public boolean delete(String path) {
-        return new File(PATH, path).delete();
+        return new File(mPath, path).delete();
     }
 }
+
