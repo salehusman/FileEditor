@@ -190,7 +190,7 @@ public class FileEditor {
         return false;
     }
 
-    public void createIfDosentExist(String fileName, boolean overwrite, List<String> data) {
+    public void createIfDosentExist(String fileName, List<String> data) {
         if (!exists(fileName))
             if (data != null)
                 writeList(fileName, data, overwrite);
@@ -198,8 +198,8 @@ public class FileEditor {
                 createEmptyFile(fileName);
     }
 
-    public void createIfDosentExist(String fileName, boolean overwrite, String... data) {
-        createIfDosentExist(fileName, overwrite, Arrays.asList(data));
+    public void createIfDosentExist(String fileName, String... data) {
+        createIfDosentExist(fileName, Arrays.asList(data));
     }
 
     /**
