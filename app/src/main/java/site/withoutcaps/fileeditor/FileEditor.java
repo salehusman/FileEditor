@@ -104,11 +104,11 @@ public class FileEditor {
      * @param data      String that needs to be saved from this cruel world of RAM. :D
      * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
      */
-    public void writeString(String path, Boolean overwrite, String... data) {
+    public void writeString(String path, Boolean overwrite, Boolean addNewLine, String... data) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(mPath + File.separator + path, !overwrite));
             for (String s : data)
-                writer.write(s + System.getProperty("line.separator"));
+                writer.write(s + (addNewLine ? System.getProperty("line.separator") : ""));
             writer.flush();
             writer.close();
         } catch (FileNotFoundException e) {
@@ -193,7 +193,7 @@ public class FileEditor {
     public void createIfDosentExist(String fileName, List<String> data) {
         if (!exists(fileName))
             if (data != null)
-                writeList(fileName, data, overwrite);
+                writeList(fileName, data, true);
             else
                 createEmptyFile(fileName);
     }
@@ -247,4 +247,3 @@ public class FileEditor {
         return new File(mPath, path).delete();
     }
 }
-
