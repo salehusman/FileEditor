@@ -5,10 +5,10 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import android.widget.Toast
-import java.util.ArrayList
 import kotlinx.android.synthetic.main.activity_main.*
+import site.withoutcaps.lessonsschedule.FileEditor
 import java.io.File
-
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             FileEditor.writeList(mRootFilesPath + "test.txt", list, true)
 
             FileEditor.writeList(mRootFilesPath + "writingTest.txt", list, false)
-            for (file in FileEditor.getFileList(mRootFilesPath )) {
+            for (file in FileEditor.getFileList(mRootFilesPath)) {
                 Log.d(TAG, "File: " + file.absolutePath)
                 for (s in FileEditor.readList(mRootFilesPath + file.name))
                     Log.d(TAG, "readList: " + s)
@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
             FileEditor.createIfDosentExist(mRootFilesPath + "file2.txt")
             FileEditor.createIfDosentExist(mRootFilesPath + "file3.txt")
 
+            FileEditor.zipFile(mRootFilesPath + "file3.txt")
             FileEditor.rename(mRootFilesPath + "file1.txt", mRootFilesPath + "file1 - renamed.txt")
             FileEditor.delete(mRootFilesPath + "file3.txt")
         })
