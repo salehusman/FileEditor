@@ -2,40 +2,30 @@ package site.withoutcaps.lessonsschedule
 
 import java.io.*
 import java.util.*
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
 import kotlin.collections.ArrayList
 
 
 object FileEditor {
 
-    /**
-     * Writes List to a file. (Each string in separate line)
-     *
-     * @param path      location of file.
-     * @param data      List that needs to be saved from this cruel world of RAM. :D
-     * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
-     */
-    fun writeList(path: String, data: Collection<*>, overwrite: Boolean = true) {
-        val writer = BufferedWriter(FileWriter(path, !overwrite))
-        for (line in data)
-            writer.write(line.toString() + System.getProperty("line.separator"))
-        writer.flush()
-        writer.close()
-    }
+    private const val TAG = "FileEditor"
 
     /**
-     * @param path      location of file.
-     * @param data      String that needs to be saved from this cruel world of RAM. :D
-     * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
+     * Reads file and returns String with its contents.
+     *
+     * @param path location of file.
+     * @return String with file contents.
+     * @see File
      */
-    fun writeString(path: String, overwrite: Boolean = true, addNewLine: Boolean = true, vararg data: String) {
-        val writer = BufferedWriter(FileWriter(path, !overwrite))
-        for (s in data)
-            writer.write(s + if (addNewLine) System.getProperty("line.separator") else "")
-        writer.flush()
-        writer.close()
+    fun readString(path: String): String {
+        if (exists(path)) {
+            val br = BufferedReader(InputStreamReader(FileInputStream(path)))
+            try {
+                return br.readText()
+            } finally {
+                br.close()
+            }
+        }
+        return ""
     }
 
     /**
@@ -58,26 +48,36 @@ object FileEditor {
     }
 
     /**
-     * Reads file and returns String with its contents.
-     *
-     * @param path location of file.
-     * @return String with file contents.
-     * @see File
+     * @param path      location of file.
+     * @param data      String that needs to be saved from this cruel world of RAM. :D
+     * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
      */
-    fun readString(path: String): String {
-        if (exists(path)) {
-            val br = BufferedReader(InputStreamReader(FileInputStream(path)))
-            try {
-                return br.readText()
-            } finally {
-                br.close()
-            }
-        }
-        return ""
+    fun writeString(path: String, overwrite: Boolean = true, addNewLine: Boolean = true, vararg data: String) {
+        val writer = BufferedWriter(FileWriter(path, !overwrite))
+        for (s in data)
+            writer.write(s + if (addNewLine) System.getProperty("line.separator") else "")
+        writer.flush()
+        writer.close()
     }
 
     /**
-     * Creates empty file if it does not exist
+     * Writes List to a file. (Each string in separate line)
+     *
+     * @param path      location of file.
+     * @param data      List that needs to be saved from this cruel world of RAM. :D
+     * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
+     */
+    fun writeList(path: String, data: Collection<*>, overwrite: Boolean = true) {
+        val writer = BufferedWriter(FileWriter(path, !overwrite))
+        for (line in data)
+            writer.write(line.toString() + System.getProperty("line.separator"))
+        writer.flush()
+        writer.close()
+    }
+
+
+    /**
+     * Creates file(Or Directory) if it does not exist
      *
      * @param path File path.
      * @param data File content, null if empty
@@ -90,10 +90,10 @@ object FileEditor {
                 writeList(path, data)
             } else {
                 val file = File(path)
-                if (file.isDirectory)
-                    return file.mkdirs()
+                return if (file.isDirectory)
+                    file.mkdirs()
                 else
-                    return file.createNewFile()
+                    file.createNewFile()
             }
             return true
         }
@@ -118,16 +118,15 @@ object FileEditor {
 
     fun createIfDosentExist(path: String, vararg data: String): Boolean = createIfDosentExist(path, Arrays.asList(*data))
 
+    fun delete(path: String): Boolean = File(path).delete()
+
     fun rename(from: String, to: String): Boolean = File(from).renameTo(File(to))
 
     fun getFileList(path: String): Array<File> = File(path).listFiles()
 
-    fun getFile(path: String): File = File(path)
-
-    fun delete(path: String): Boolean = File(path).delete()
-
     fun moveFile(srcPath: String, dstPath: String) = moveFile(File(srcPath), File(dstPath))
 
     fun copyFile(srcPath: String, dstPath: String) = copyFile(File(srcPath), File(dstPath))
+
 
 }
