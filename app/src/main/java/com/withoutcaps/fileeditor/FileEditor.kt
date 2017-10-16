@@ -19,10 +19,8 @@ object FileEditor {
     fun readString(path: String): String {
         if (exists(path)) {
             val br = BufferedReader(InputStreamReader(FileInputStream(path)))
-            try {
+            br.use {
                 return br.readText()
-            } finally {
-                br.close()
             }
         }
         return ""
@@ -38,10 +36,8 @@ object FileEditor {
     fun readList(path: String): MutableList<String> {
         if (exists(path)) {
             val br = BufferedReader(InputStreamReader(FileInputStream(path)))
-            try {
+            br.use {
                 return br.readLines() as MutableList<String>
-            } finally {
-                br.close()
             }
         }
         return ArrayList(0)
@@ -114,15 +110,19 @@ object FileEditor {
         src.delete()
     }
 
-    fun exists(path: String): Boolean = File(path).exists()
+    fun exists(vararg paths: String): Boolean = paths.all { File(it).exists() }
 
     fun createIfDosentExist(path: String, vararg data: String): Boolean = createIfDosentExist(path, Arrays.asList(*data))
 
-    fun delete(path: String): Boolean = File(path).delete()
+    fun delete(vararg paths: String): Boolean = paths.all { File(it).delete() }
 
-    fun rename(from: String, to: String): Boolean = File(from).renameTo(File(to))
+    fun rename(from: String, to: String): Boolean = rename(File(from), File(to))
 
-    fun getFileList(path: String): Array<File> = File(path).listFiles()
+    fun rename(from: File, to: File): Boolean = from.renameTo(to)
+
+    fun getFileList(path: String): Array<File> = getFileList(File(path))
+
+    fun getFileList(directory: File): Array<File> = directory.listFiles()
 
     fun moveFile(srcPath: String, dstPath: String) = moveFile(File(srcPath), File(dstPath))
 
