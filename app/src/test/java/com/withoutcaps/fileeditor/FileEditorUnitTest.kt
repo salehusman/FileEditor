@@ -10,13 +10,13 @@ import java.io.File
 
 class FileEditorUnitTest {
 
-    val perfTest = true
-    val testsCount = 100
+    private val perfTest = true
+    private val testsCount = 100
 
-    val testFile1 = File(Constants.rootPath + "testText1.txt")
-    val testFile2 = File(Constants.rootPath + "testText2.txt")
+    private val testFile1 = File(Constants.rootPath + "testText1.txt")
+    private val testFile2 = File(Constants.rootPath + "testText2.txt")
 
-    fun createTempFiles() {
+    private fun createTempFiles() {
         testFile1.printWriter().use { out ->
             out.print(Constants.testText1)
         }
@@ -53,8 +53,6 @@ class FileEditorUnitTest {
 
     @Test
     fun readListTest() {
-        var fileContent = listOf<String>()
-
         assertFalse(FileEditor.readList(testFile1.path).joinToString("\n") != Constants.testText1)
         assertFalse(FileEditor.readList(testFile2.path).joinToString("\n") != Constants.testText2)
 
@@ -68,6 +66,20 @@ class FileEditorUnitTest {
             }
             System.out.println("readList testFile2: " + average / testsCount)
         }
+    }
+
+    @Test
+    fun writeStringTest() {
+        testFile2.delete()
+        FileEditor.writeString(testFile2.path, true, Constants.testText2)
+        assertFalse(!testFile2.exists())
+    }
+
+    @Test
+    fun writeListTest() {
+        testFile2.delete()
+        FileEditor.writeList(testFile2.path, Constants.testText2.toList(), true)
+        assertFalse(!testFile2.exists())
     }
 
     @Test
