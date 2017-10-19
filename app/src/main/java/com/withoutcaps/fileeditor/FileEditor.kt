@@ -48,10 +48,10 @@ object FileEditor {
      * @param data      String that needs to be saved from this cruel world of RAM. :D
      * @param overwrite if passed value is 'true' - file will get overwrited with specified data, appends otherwise.
      */
-    fun writeString(path: String, overwrite: Boolean = true, addNewLine: Boolean = true, vararg data: String) {
+    fun writeString(path: String, overwrite: Boolean = true, vararg data: String) {
         val writer = BufferedWriter(FileWriter(path, !overwrite))
         for (s in data)
-            writer.write(s + if (addNewLine) System.getProperty("line.separator") else "")
+            writer.write(if (s != data.last()) s + System.getProperty("line.separator") else s)
         writer.flush()
         writer.close()
     }
