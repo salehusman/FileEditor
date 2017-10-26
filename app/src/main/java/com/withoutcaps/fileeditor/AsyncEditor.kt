@@ -1,4 +1,4 @@
-package site.withoutcaps.fileeditor
+package com.withoutcaps.fileeditor
 
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch

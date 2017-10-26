@@ -1,4 +1,4 @@
-package site.withoutcaps.lessonsschedule
+package com.withoutcaps.fileeditor
 
 import java.io.*
 import java.util.*
