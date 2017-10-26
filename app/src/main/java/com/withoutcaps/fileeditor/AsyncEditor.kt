@@ -15,9 +15,9 @@ object AsyncEditor {    //TODO: Remove unnecessary methods (after performance ch
     fun readList(path: String, onDone: (MutableList<String>) -> Unit) = launch(pool, block = { onDone.invoke(FileEditor.readList(path)) })
 
     //TODO: Make it so that it would accept "vararg" as "data" param
-    fun writeString(path: String, overwrite: Boolean = true, addNewLine: Boolean = true, data: String, onDone: () -> Unit) {
+    fun writeString(path: String, overwrite: Boolean = true, data: String, onDone: () -> Unit) {
         launch(pool, block = {
-            FileEditor.writeString(path, addNewLine, overwrite, data)
+            FileEditor.writeString(path, overwrite, data)
             onDone.invoke()
         })
     }
