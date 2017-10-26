@@ -2,7 +2,6 @@ package com.withoutcaps.fileeditor
 
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.launch
-import site.withoutcaps.lessonsschedule.FileEditor
 
 /**
  * Wrapper class for FileEditor.class which adds async calls
