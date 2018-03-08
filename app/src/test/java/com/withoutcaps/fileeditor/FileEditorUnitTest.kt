@@ -4,10 +4,10 @@ import org.junit.After
 import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
-import site.withoutcaps.lessonsschedule.FileEditor
 import java.io.File
 
 
+@Suppress("ConstantConditionIf")
 class FileEditorUnitTest {
 
     private val perfTest = true
@@ -33,10 +33,8 @@ class FileEditorUnitTest {
 
     @Test
     fun readStringTest() {
-
         assertFalse(FileEditor.readString(testFile1.path) != Constants.testText1)
         assertFalse(FileEditor.readString(testFile2.path) != Constants.testText2)
-
 
         if (perfTest) {
             var average: Long = 0
@@ -103,7 +101,6 @@ class FileEditorUnitTest {
         assertFalse(FileEditor.delete("Failing path", "Failing path"))
         assertFalse(FileEditor.delete("Failing path"))
     }
-
 
     @After
     @Throws(Exception::class)
