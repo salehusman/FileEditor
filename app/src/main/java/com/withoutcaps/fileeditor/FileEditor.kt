@@ -94,34 +94,36 @@ object FileEditor {
         return false
     }
 
-    fun copyFile(src: File, dst: File) {
+    fun copy(src: File, dest: File) {
         FileInputStream(src).channel.use { inChannel ->
-            FileOutputStream(dst).channel.use { outChannel ->
+            FileOutputStream(dest).channel.use { outChannel ->
                 inChannel.transferTo(0, inChannel.size(), outChannel)
             }
         }
     }
 
-    fun moveFile(src: File, dst: File) {
-        copyFile(src, dst)
-        src.delete()
-    }
+    fun copy(src: String, dest: String) = copy(File(src), File(dest))
 
+    fun move(src: File, dst: File) = rename(src, dst)
+    fun move(src: String, dest: String) = rename(src, dest)
+
+    fun exists(vararg paths: File): Boolean = paths.all { it.exists() }
     fun exists(vararg paths: String): Boolean = paths.all { File(it).exists() }
 
     fun createIfDoesntExist(path: String, vararg data: String): Boolean = createIfDoesntExist(path, Arrays.asList(*data))
 
     fun delete(vararg paths: String): Boolean = paths.all { File(it).delete() }
+    fun delete(vararg paths: File): Boolean = paths.all { it.delete() }
 
     fun rename(from: String, to: String): Boolean = rename(File(from), File(to))
-
     fun rename(from: File, to: File): Boolean = from.renameTo(to)
 
-    fun getFileList(path: String): Array<File> = getFileList(File(path))
-
-    fun getFileList(directory: File): Array<File> = directory.listFiles()
-
-    fun moveFile(srcPath: String, dstPath: String) = moveFile(File(srcPath), File(dstPath))
-
-    fun copyFile(srcPath: String, dstPath: String) = copyFile(File(srcPath), File(dstPath))
+    fun readDir(path: String): Array<File> = readDir(File(path))
+    fun readDir(directory: File): Array<File> {
+        return try {
+            directory.listFiles()
+        } catch (ex: Exception) {
+            arrayOf()
+        }
+    }
 }
