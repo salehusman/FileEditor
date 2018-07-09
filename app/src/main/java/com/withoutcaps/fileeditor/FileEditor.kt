@@ -110,7 +110,8 @@ object FileEditor {
     fun exists(vararg paths: File): Boolean = paths.all { it.exists() }
     fun exists(vararg paths: String): Boolean = paths.all { File(it).exists() }
 
-    fun createIfDoesntExist(path: String, vararg data: String): Boolean = createIfDoesntExist(path, Arrays.asList(*data))
+    fun createIfDoesntExist(path: String, vararg data: String): Boolean =
+            createIfDoesntExist(path, Arrays.asList(*data))
 
     fun delete(vararg paths: String): Boolean = paths.all { File(it).delete() }
     fun delete(vararg paths: File): Boolean = paths.all { it.delete() }

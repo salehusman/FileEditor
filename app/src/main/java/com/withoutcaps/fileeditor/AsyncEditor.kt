@@ -2,52 +2,47 @@
 
 package com.withoutcaps.fileeditor
 
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.async
 import java.io.File
 
 @Suppress("unused", "MemberVisibilityCanPrivate")
 object AsyncEditor {
 
-    inline fun readString(path: String, crossinline onDone: (String) -> Unit) = launch { onDone.invoke(FileEditor.readString(path)) }
-    inline fun readList(path: String, crossinline onDone: (MutableList<String>) -> Unit) = launch { onDone.invoke(FileEditor.readList(path)) }
+    fun readString(path: String) = async { FileEditor.readString(path) }
+    fun readList(path: String) = async { FileEditor.readList(path) }
 
-    inline fun writeString(path: String, overwrite: Boolean = true, vararg data: String, crossinline onDone: () -> Unit) = launch {
+    fun writeString(path: String, overwrite: Boolean, vararg data: String) = async {
         FileEditor.writeString(path, overwrite, *data)
-        onDone.invoke()
     }
 
-    inline fun writeList(path: String, data: Collection<*>, overwrite: Boolean = true, crossinline onDone: () -> Unit) = launch {
+    fun writeList(path: String, overwrite: Boolean, data: Collection<*>) = async {
         FileEditor.writeList(path, data, overwrite)
-        onDone.invoke()
     }
 
-    inline fun createIfDoesntExist(path: String, crossinline onDone: (Boolean) -> Unit, data: Collection<*>? = null) = launch { onDone.invoke(FileEditor.createIfDoesntExist(path, data)) }
-    inline fun createIfDoesntExist(path: String, crossinline onDone: (Boolean) -> Unit, data: String) = launch { onDone.invoke(FileEditor.createIfDoesntExist(path, data)) }
-
-    inline fun copy(src: File, dest: File, crossinline onDone: () -> Unit) = launch {
-        FileEditor.copy(src, dest)
-        onDone()
+    fun createIfDoesntExist(path: String, data: Collection<*>? = null) = async {
+        FileEditor.createIfDoesntExist(path, data)
     }
 
-    inline fun move(src: File, dest: File, crossinline onDone: () -> Unit) = launch {
-        FileEditor.move(src, dest)
-        onDone()
+    fun createIfDoesntExist(path: String, data: String) = async {
+        FileEditor.createIfDoesntExist(path, data)
     }
 
-    inline fun exists(vararg files: File, crossinline onDone: () -> Unit) = launch {
-        FileEditor.exists(*files)
-        onDone()
-    }
+    fun copy(src: String, dest: String) = async { FileEditor.copy(src, dest) }
+    fun copy(src: File, dest: File) = async { FileEditor.copy(src, dest) }
 
-    inline fun exists(vararg files: String, crossinline onDone: () -> Unit) = launch {
-        FileEditor.exists(*files)
-        onDone()
-    }
+    fun move(src: String, dest: String) = async { FileEditor.move(src, dest) }
+    fun move(src: File, dest: File) = async { FileEditor.move(src, dest) }
 
-    inline fun readDir(path: String, crossinline result: (Array<File>) -> Unit) = launch { result(FileEditor.readDir(path)) }
-    inline fun readDir(path: File, crossinline result: (Array<File>) -> Unit) = launch { result(FileEditor.readDir(path)) }
+    fun exists(vararg files: String) = async { FileEditor.exists(*files) }
+    fun exists(vararg files: File) = async { FileEditor.exists(*files) }
 
-    inline fun delete(src: String, crossinline onDone: (Boolean) -> Unit) = launch { onDone.invoke(FileEditor.delete(src)) }
-    inline fun delete(src: File, crossinline onDone: (Boolean) -> Unit) = launch { onDone.invoke(FileEditor.delete(src)) }
+    fun delete(src: String) = async { FileEditor.delete(src) }
+    fun delete(src: File) = async { FileEditor.delete(src) }
+
+    fun rename(src: String, dest: String) = async { FileEditor.rename(src, dest) }
+    fun rename(src: File, dest: File) = async { FileEditor.rename(src, dest) }
+
+    fun readDir(path: String) = async { FileEditor.readDir(path) }
+    fun readDir(path: File) = async { FileEditor.readDir(path) }
 
 }
